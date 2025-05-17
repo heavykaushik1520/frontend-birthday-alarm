@@ -30,7 +30,7 @@ const EmployeeForm = () => {
                 throw new Error("Authentication token is missing.");
             }
 
-            const response = await fetch('https://artiststation.co.in/birthday-alarm-api/api/employees', {
+            const response = await fetch('https://birthday-alarm.onrender.com/api/employees', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -90,8 +90,8 @@ const EmployeeForm = () => {
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
             <ToastContainer />
             <div className="max-w-2xl w-full bg-gray-800 bg-opacity-75 backdrop-filter backdrop-blur-md rounded-lg shadow-lg p-12">
-                <h2 className="text-4xl font-extrabold text-white text-center mb-8">
-                    DETAILS
+                <h2 className="text-4xl font-semibold text-white text-center mb-8">
+                    BIRTHDAY DETAILS
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Company Name */}

@@ -27,7 +27,7 @@ const UpdateEmployeeForm = () => {
                     throw new Error('Authentication token is missing.');
                 }
 
-                const response = await fetch(`https://artiststation.co.in/birthday-alarm-api/api/employees/${id}`, {
+                const response = await fetch(`https://birthday-alarm.onrender.com/api/employees/${id}`, {
                     headers: {
                         Authorization: `Bearer ${authToken}`,
                     },
@@ -70,7 +70,7 @@ const UpdateEmployeeForm = () => {
                 throw new Error('Authentication token is missing.');
             }
 
-            const response = await fetch(`https://artiststation.co.in/birthday-alarm-api/api/employees/${id}`, {
+            const response = await fetch(`https://birthday-alarm.onrender.com/api/employees/${id}`, {
                 method: 'PUT', // Or PATCH, depending on your API
                 headers: {
                     'Content-Type': 'application/json',

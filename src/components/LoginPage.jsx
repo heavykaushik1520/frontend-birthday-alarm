@@ -19,7 +19,7 @@ const LoginPage = () => {
     setError("");
 
     try {
-      const response = await fetch("https://artiststation.co.in/birthday-alarm-api/api/admin/login", {
+      const response = await fetch("https://birthday-alarm.onrender.com/api/admin/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

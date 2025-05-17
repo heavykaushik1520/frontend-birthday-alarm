@@ -20,7 +20,7 @@ const UpcomingBirthdays = () => {
         }
 
         const response = await fetch(
-          "https://artiststation.co.in/birthday-alarm-api/api/employees/upcoming-birthdays",
+          "https://birthday-alarm.onrender.com/api/employees/upcoming-birthdays",
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
