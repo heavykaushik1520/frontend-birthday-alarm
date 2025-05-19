@@ -31,8 +31,6 @@ const Dashboard = () => {
     }
   };
 
-  
-
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -65,7 +63,6 @@ const Dashboard = () => {
           <span className="text-white text-xl font-semibold">Email Sender</span>
         </div>
         <nav className="mt-6">
-          
           {/* Add more navigation links here */}
           <Link
             to="/form"

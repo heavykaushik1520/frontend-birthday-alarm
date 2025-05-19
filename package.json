@@ -3,17 +3,18 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-    "homepage": "https://artiststation.co.in/birthday-alarm/",
-
+  "homepage": "https://artiststation.co.in/birthday-alarm/",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "esbuild src/index.js --bundle --outfile=dist/bundle.js --format=esm --loader:.js=jsx",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.0",

@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+// src/components/LoginPage.jsx
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { AuthContext } from "../context/AuthContext"; // Import AuthContext
 
 const LoginPage = () => {
   const [userName, setUserName] = useState("");
@@ -12,6 +14,7 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { updateAuthToken } = useContext(AuthContext); // Use the context
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -19,7 +22,7 @@ const LoginPage = () => {
     setError("");
 
     try {
-      const response = await fetch("https://birthday-alarm.onrender.com/api/admin/login", {
+      const response = await fetch("http://localhost:3000/api/admin/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,27 +32,12 @@ const LoginPage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        // console.log("Login successful:", data);
-        toast.success("Login Successful!", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark", // Using dark theme for black/blue feel
-        });
-        // Store token or user info if needed (e.g., in local storage)
+        toast.success("Login Successful!", { theme: "dark" });
         if (data && data.token) {
-          localStorage.setItem('authToken', data.token);
-          // console.log("Token stored:", data.token);
+          updateAuthToken(data.token); // Store token using context
         } else {
-          // console.warn("Token not found in the login response.");
           toast.warn("Authentication token not received.", { theme: "dark" });
         }
-
-
 
         setTimeout(() => {
           navigate("/dashboard"); // Redirect to dashboard
@@ -57,30 +45,12 @@ const LoginPage = () => {
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Invalid username or password.");
-        toast.error(errorData.message || "Login Failed", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
+        toast.error(errorData.message || "Login Failed", { theme: "dark" });
       }
     } catch (err) {
       console.error("Login error:", err);
       setError("An unexpected error occurred.");
-      toast.error("Login Failed", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
+      toast.error("Login Failed", { theme: "dark" });
     } finally {
       setLoading(false);
     }
@@ -94,20 +64,14 @@ const LoginPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <ToastContainer />
       <div className="max-w-lg w-full space-y-8 bg-gray-800 bg-opacity-75 backdrop-filter backdrop-blur-md rounded-lg shadow-lg p-10">
-        {" "}
-        {/* Increased padding to p-10 */}
         <div>
           <h2 className="mt-6 text-center text-4xl font-extrabold text-white">
-            {" "}
-            {/* Increased font size */}
             SIGN IN
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div className="mb-4">
-              {" "}
-              {/* Added margin for spacing */}
               <label htmlFor="userName" className="sr-only">
                 User Name
               </label>
@@ -115,7 +79,6 @@ const LoginPage = () => {
                 id="userName"
                 name="userName"
                 type="text"
-                // autoComplete="username"
                 required
                 className="appearance-none rounded-t-md relative block w-full px-4 py-3 border border-gray-700 placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-1 sm:text-lg"
                 placeholder="User Name"
@@ -124,8 +87,6 @@ const LoginPage = () => {
               />
             </div>
             <div className="relative">
-              {" "}
-              {/* Position relative for eye icon */}
               <label htmlFor="password" className="sr-only">
                 Password
               </label>
@@ -133,7 +94,6 @@ const LoginPage = () => {
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
-                // autoComplete="current-password"
                 required
                 className="appearance-none rounded-b-md relative block w-full px-4 py-3 border border-gray-700 placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-1 sm:text-lg"
                 placeholder="Password"
@@ -151,12 +111,11 @@ const LoginPage = () => {
           </div>
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              {/* Remember me checkbox (optional) */}
+            <div>
+              {/* Optional "Remember me" checkbox */}
             </div>
-
-            <div className="text-sm">
-              {/* Forgot password link (optional) */}
+            <div>
+              {/* Optional "Forgot password" link */}
             </div>
           </div>
 
@@ -175,8 +134,6 @@ const LoginPage = () => {
                   fill="none"
                   viewBox="0 0 24 24"
                 >
-                  {" "}
-                  {/* Increased spinner size */}
                   <circle
                     className="opacity-25"
                     cx="12"

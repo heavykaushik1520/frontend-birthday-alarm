@@ -1,10 +1,12 @@
 /* eslint-disable no-unused-vars */
 
-import React, { useState, useEffect, useCallback } from "react";
-import { toast } from "react-toastify";
+import React, { useState, useEffect, useCallback, useContext } from "react";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import Layout from "./Layout";
+import { AuthContext } from "../context/AuthContext";
+
 
 const DashboardContent = ({
   upcomingBirthdaysCount: initialUpcomingBirthdaysCount,
@@ -19,42 +21,45 @@ const DashboardContent = ({
   const [upcomingBirthdaysCount, setUpcomingBirthdaysCount] = useState(
     initialUpcomingBirthdaysCount
   );
+  const { authToken } = useContext(AuthContext); // Get authToken from context
 
-  const fetchBirthdaysByMonth = useCallback(async (month) => {
-    setLoading(true);
-    setError("");
-    try {
-      const authToken = localStorage.getItem("authToken");
-      if (!authToken) {
-        throw new Error("Authentication token is missing.");
-      }
-
-      const response = await fetch(
-        `https://birthday-alarm.onrender.com/api/employees?month=${month}`,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
+  const fetchBirthdaysByMonth = useCallback(
+    async (month) => {
+      setLoading(true);
+      setError("");
+      try {
+        if (!authToken) {
+          throw new Error("Authentication token is missing.");
         }
-      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.message || `Failed to fetch birthdays for ${month}.`
+        const response = await fetch(
+          `http://localhost:3000/api/employees?month=${month}`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
         );
-      }
 
-      const data = await response.json();
-      setBirthdaysByMonth((prev) => ({ ...prev, [month]: data.length }));
-    } catch (err) {
-      console.error(`Error fetching birthdays for ${month}:`, err);
-      setError(err.message);
-      toast.error(err.message, { theme: "dark" });
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.message || `Failed to fetch birthdays for ${month}.`
+          );
+        }
+
+        const data = await response.json();
+        setBirthdaysByMonth((prev) => ({ ...prev, [month]: data.length }));
+      } catch (err) {
+        console.error(`Error fetching birthdays for ${month}:`, err);
+        setError(err.message);
+        toast.error(err.message, { theme: "dark" });
+      } finally {
+        setLoading(false);
+      }
+    },
+    [authToken]
+  ); // Add authToken to the dependency array
 
   useEffect(() => {
     const currentMonth = new Date().getMonth() + 1;
@@ -102,28 +107,12 @@ const DashboardContent = ({
 
   return (
     <>
-      <h1 className="text-3xl md:text-4xl font-semibold text-white text-left mt-6 mb-4 md:ml-20">
+      <h1 className="text-3xl md:text-4xl font-semibold text-white text-left mt-6 mb-4 md:ml-20 ml-20">
         DASHBOARD
       </h1>
       <div className="mt-8 md:mt-16 md:ml-0 flex flex-wrap gap-4 max-w-3xl mx-auto md:mx-0">
-        {/* First Div (Original Upcoming Birthdays Count) */}
-        {/* <div className="bg-gray-700 hover:bg-gray-600 text-white rounded-md p-10 cursor-pointer w-full sm:w-auto sm:min-w-[300px]">
-        <Link
-          to="/upcoming-birthdays"
-          className="block w-full h-full text-center flex items-center justify-center"
-        >
-          <span className="text-xl font-semibold">
-            🍷 UPCOMING BIRTHDAYS 🍷
-            <br></br>
-            <h1 className="text-4xl font-bold leading-tight h-12 flex items-center justify-center">
-              {upcomingBirthdaysCount}
-            </h1>
-          </span>
-        </Link>
-      </div> */}
-
         {/* Second Div (Month Filter Dropdown) */}
-        <div className="bg-gray-700 hover:bg-gray-600 text-white rounded-md p-10 cursor-pointer relative w-full sm:w-auto  sm:min-w-[300px] md:ml-20">
+        <div className="bg-gray-700 hover:bg-gray-600 text-white rounded-md p-10 cursor-pointer relative w-full sm:w-auto  sm:min-w-[300px] md:ml-20">
           <div
             className="flex flex-col items-center justify-center" // Changed to flex-col and items-center
             onClick={toggleDropdown}
@@ -149,16 +138,16 @@ const DashboardContent = ({
                 strokeLinejoin="round"
                 strokeWidth="2"
                 d="M19 9l-7 7-7-7"
-              />
+              ></path>
             </svg>
           </div>
 
           {showDropdown && (
-            <div className="absolute top-full left-0 mt-2 w-full bg-gray-800 rounded-md shadow-lg z-10">
+            <div className="absolute top-full left-0 mt-2 w-full rounded-md shadow-lg bg-gray-800 z-10">
               {monthNames.map((month, index) => (
                 <button
                   key={month}
-                  className="block w-full px-4 py-2 text-white text-center hover:bg-gray-700 focus:outline-none"
+                  className="block w-full text-left px-4 py-2 text-white hover:bg-gray-700"
                   onClick={() => handleMonthSelect(index + 1, month)}
                 >
                   {month}
@@ -166,7 +155,6 @@ const DashboardContent = ({
               ))}
             </div>
           )}
-          {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
         </div>
       </div>
     </>
@@ -177,35 +165,32 @@ const DashboardPage = () => {
   const [upcomingBirthdaysCount, setUpcomingBirthdaysCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { authToken } = useContext(AuthContext); // Get authToken from context
 
   useEffect(() => {
     const fetchUpcomingBirthdaysCount = async () => {
       setLoading(true);
       setError("");
       try {
-        const authToken = localStorage.getItem("authToken");
         if (!authToken) {
           throw new Error("Authentication token is missing.");
         }
-
         const response = await fetch(
-          "https://birthday-alarm.onrender.com/api/employees/upcoming-birthdays",
+          "http://localhost:3000/api/employees/upcoming-birthdays",
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
             },
           }
         );
-
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(
             errorData.message || "Failed to fetch upcoming birthdays count."
           );
         }
-
         const data = await response.json();
-        setUpcomingBirthdaysCount(data.length);
+        setUpcomingBirthdaysCount(data.count);
       } catch (err) {
         console.error("Error fetching upcoming birthdays count:", err);
         setError(err.message);
@@ -216,21 +201,18 @@ const DashboardPage = () => {
     };
 
     fetchUpcomingBirthdaysCount();
-  }, []);
+  }, [authToken]); // Add authToken to the dependency array
 
   return (
     <Layout>
       {loading ? (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-          <div className="text-white text-lg">Loading dashboard data...</div>
-        </div>
+        <div className="text-white text-lg">Loading dashboard data...</div>
       ) : error ? (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-          <div className="text-red-500 text-lg">{error}</div>
-        </div>
+        <div className="text-red-500 text-lg">{error}</div>
       ) : (
         <DashboardContent upcomingBirthdaysCount={upcomingBirthdaysCount} />
       )}
+      <ToastContainer />
     </Layout>
   );
 };

@@ -30,7 +30,7 @@ const EmployeeForm = () => {
                 throw new Error("Authentication token is missing.");
             }
 
-            const response = await fetch('https://birthday-alarm.onrender.com/api/employees', {
+            const response = await fetch('http://localhost:3000/api/employees', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

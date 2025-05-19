@@ -20,7 +20,7 @@ const UpcomingBirthdays = () => {
         }
 
         const response = await fetch(
-          "https://birthday-alarm.onrender.com/api/employees/upcoming-birthdays",
+          "http://localhost:3000/api/employees/upcoming-birthdays",
           {
             headers: {
               Authorization: `Bearer ${authToken}`,

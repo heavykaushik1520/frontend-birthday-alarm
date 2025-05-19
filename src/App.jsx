@@ -6,58 +6,55 @@ import Footer from "./components/Footer";
 import EmployeeForm from "./components/Form";
 import EmployeeList from "./components/EmployeeList";
 import UpdateEmployeeForm from "./components/UpdateEmployeeForm";
-import Layout from './components/Layout';
+import Layout from "./components/Layout";
 import UpcomingBirthdays from "./components/UpComingBirthdays";
 import DashboardPage from "./components/DashboardPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./context/AuthContext";
+import NotFoundPage from "./components/NotFoundPage";
 
 function App() {
   return (
-    <>
-      <BrowserRouter basename="/birthday_alarm">
+    <BrowserRouter basename="/birthday_alarm/">
+      <AuthProvider>
+        {" "}
+        {/* Wrap the routes with AuthProvider */}
         <Routes>
           <Route path="/" element={<LoginPage />} />
-          {/* <Route path="/dashboard" element={<DashBoard />} />
-        <Route path="/form" element={<EmployeeForm/>}/>
-        <Route path="/employees" element={<EmployeeList/>}/>
-        <Route path="/employees/update/:id" element={<UpdateEmployeeForm />} /> */}
-          <Route path="/dashboard" element={<DashboardPage />} />
-          {/* Example for a potential dashboard content page */}
-          <Route
-            path="/form"
-            element={
-              <Layout>
-                <EmployeeForm />
-              </Layout>
-            }
-          />
-          <Route
-            path="/employees"
-            element={
-              <Layout>
-                <EmployeeList />
-              </Layout>
-            }
-          />
-          <Route
-            path="/employees/update/:id"
-            element={
-              <Layout>
-                <UpdateEmployeeForm />
-              </Layout>
-            }
-          />
-          <Route
-            path="/upcoming-birthdays"
-            element={
-              <Layout>
-                <UpcomingBirthdays />
-              </Layout>
-            }
-          />
+
+          {/* Protected routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route
+              path="/form"
+              element={
+                <Layout>
+                  <EmployeeForm />
+                </Layout>
+              }
+            />
+            <Route
+              path="/employees"
+              element={
+                <Layout>
+                  <EmployeeList />
+                </Layout>
+              }
+            />
+            <Route
+              path="/employees/update/:id"
+              element={
+                <Layout>
+                  <UpdateEmployeeForm />
+                </Layout>
+              }
+            />
+          </Route>
+           <Route path="*" element={<NotFoundPage />} />
         </Routes>
-      </BrowserRouter>
+      </AuthProvider>
       <Footer />
-    </>
+    </BrowserRouter>
   );
 }
 
